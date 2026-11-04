@@ -1,0 +1,16 @@
+# Build + push only. The deploy is done deliberately (it carries secrets,
+# Cloud SQL attachment and scaling flags); cloudbuild.yaml is the full pipeline.
+substitutions:
+  _REGION: us-central1
+  _REPO: neuron-geo
+  _SERVICE: neuron-geo-web
+steps:
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    env: [DOCKER_BUILDKIT=1]   # the Dockerfile uses RUN --mount=type=cache
+    args: [build, -t, "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA", .]
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: [push, "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA"]
+options:
+  logging: CLOUD_LOGGING_ONLY

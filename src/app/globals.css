@@ -1,0 +1,656 @@
+/* Neuron SEO — placeholder brand, product register (inherited palette;
+   proper brand pass lands in P3). Light, high-contrast, one family (Inter),
+   indigo brand + teal accent. Every utility class (.card/.row/.pill/…)
+   keeps working. */
+
+:root {
+  --bg: oklch(0.985 0.004 260);
+  --surface: #ffffff;
+  --panel: oklch(0.968 0.007 265);
+  --ink: oklch(0.24 0.035 275);
+  --muted: oklch(0.46 0.025 270);
+  --line: oklch(0.9 0.01 265);
+  --line-soft: oklch(0.94 0.007 265);
+
+  --brand: oklch(0.51 0.19 277);
+  --brand-strong: oklch(0.45 0.2 277);
+  --brand-tint: oklch(0.95 0.025 277);
+  --brand-ink: #ffffff;
+
+  --go: oklch(0.56 0.13 165);
+  --go-tint: oklch(0.955 0.03 165);
+
+  --warn-bg: oklch(0.96 0.04 90);
+  --warn-line: oklch(0.8 0.1 85);
+  --danger: oklch(0.5 0.19 27);
+  --danger-tint: oklch(0.96 0.02 27);
+
+  --radius: 12px;
+  --radius-sm: 10px;
+  --shadow-overlay: 0 12px 32px -12px oklch(0.24 0.035 275 / 0.25);
+
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-backdrop: 30;
+  --z-drawer: 40;
+
+  /* Skeleton tone. Between --panel (.968) and --line (.90): clearly not
+     content, clearly not a border. Derived from the same oklch family so a
+     future theme carries it along for free. */
+  --skel: oklch(0.93 0.008 265);
+  --skel-sheen: oklch(0.99 0.004 260 / 0.9);
+
+  /* interaction surfaces — tokenized so the dark variant carries them */
+  --hover: oklch(0.94 0.012 270);
+  --scrim: oklch(0.24 0.035 275 / 0.35);
+  --placeholder: oklch(0.52 0.02 270);
+
+  /* legacy alias still referenced by pages */
+  --card: var(--surface);
+
+  /* LIGHT-FIRST: these :root values ARE the light theme, and light is the
+     default. The dark variant below only re-points the same tokens — no
+     component knows which theme it is in. `color-scheme` rides along so
+     native chrome (selects, date pickers, scrollbars) matches the cards. */
+  color-scheme: light;
+}
+
+/* ---------------------------------------------------------------- dark */
+/* The dark variant — MECHANISM ONLY in P0 (sane values, real design pass in
+   P3). Two routes to the same tokens:
+     1. explicit choice: the theme toggle stamps data-theme="dark"/"light"
+        on <html> (persisted in localStorage, applied pre-paint in layout).
+     2. default = system: no attribute stamped, so the media query decides —
+        guarded with :not([data-theme="light"]) so an explicit light choice
+        beats a dark OS.
+   Keep the two blocks IDENTICAL — a token defined in one and not the other
+   is a theme bug you only see with one toggle state. */
+:root[data-theme="dark"] {
+  --bg: oklch(0.17 0.014 265);
+  --surface: oklch(0.215 0.016 265);
+  --panel: oklch(0.245 0.018 265);
+  --ink: oklch(0.93 0.012 265);
+  --muted: oklch(0.7 0.02 268);
+  --line: oklch(0.33 0.02 265);
+  --line-soft: oklch(0.28 0.016 265);
+
+  --brand: oklch(0.66 0.16 277);
+  --brand-strong: oklch(0.74 0.15 277);
+  --brand-tint: oklch(0.3 0.06 277);
+  --brand-ink: oklch(0.16 0.02 277);
+
+  --go: oklch(0.72 0.13 165);
+  --go-tint: oklch(0.28 0.05 165);
+
+  --warn-bg: oklch(0.28 0.05 90);
+  --warn-line: oklch(0.5 0.09 85);
+  --danger: oklch(0.66 0.18 27);
+  --danger-tint: oklch(0.27 0.045 27);
+
+  --shadow-overlay: 0 12px 32px -12px oklch(0 0 0 / 0.55);
+
+  --skel: oklch(0.28 0.014 265);
+  --skel-sheen: oklch(0.34 0.016 265 / 0.9);
+
+  --hover: oklch(0.29 0.02 270);
+  --scrim: oklch(0.1 0.01 265 / 0.55);
+  --placeholder: oklch(0.6 0.02 268);
+
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: oklch(0.17 0.014 265);
+    --surface: oklch(0.215 0.016 265);
+    --panel: oklch(0.245 0.018 265);
+    --ink: oklch(0.93 0.012 265);
+    --muted: oklch(0.7 0.02 268);
+    --line: oklch(0.33 0.02 265);
+    --line-soft: oklch(0.28 0.016 265);
+
+    --brand: oklch(0.66 0.16 277);
+    --brand-strong: oklch(0.74 0.15 277);
+    --brand-tint: oklch(0.3 0.06 277);
+    --brand-ink: oklch(0.16 0.02 277);
+
+    --go: oklch(0.72 0.13 165);
+    --go-tint: oklch(0.28 0.05 165);
+
+    --warn-bg: oklch(0.28 0.05 90);
+    --warn-line: oklch(0.5 0.09 85);
+    --danger: oklch(0.66 0.18 27);
+    --danger-tint: oklch(0.27 0.045 27);
+
+    --shadow-overlay: 0 12px 32px -12px oklch(0 0 0 / 0.55);
+
+    --skel: oklch(0.28 0.014 265);
+    --skel-sheen: oklch(0.34 0.016 265 / 0.9);
+
+    --hover: oklch(0.29 0.02 270);
+    --scrim: oklch(0.1 0.01 265 / 0.55);
+    --placeholder: oklch(0.6 0.02 268);
+
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-inter, Inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 { font-size: 1.44rem; font-weight: 700; letter-spacing: -0.015em; margin: 0.2rem 0 1rem; text-wrap: balance; }
+h2 { font-size: 1.08rem; font-weight: 650; letter-spacing: -0.008em; margin: 1.5rem 0 0.6rem; text-wrap: balance; }
+h3 { font-size: 0.95rem; font-weight: 650; margin: 1rem 0 0.4rem; }
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { max-width: 72ch; }
+
+/* ------------------------------------------------------------ app shell */
+.app { display: flex; min-height: 100dvh; }
+
+.sidebar {
+  width: 236px;
+  flex: none;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 18px 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+}
+.brandmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 16px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+.brandmark .bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 20px;
+  flex: none;
+}
+.brandmark .bars span {
+  width: 5px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, oklch(0.55 0.18 277), oklch(0.6 0.13 180));
+}
+.brandmark .bars span:nth-child(1) { height: 10px; }
+.brandmark .bars span:nth-child(2) { height: 16px; }
+.brandmark .bars span:nth-child(3) { height: 20px; }
+.brandmark .os { color: var(--go); }
+
+.navgroup {
+  margin: 14px 10px 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+}
+/* collapsible group headers — a real button, keyboard first-class */
+.navgroup-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: calc(100% - 20px);
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+  text-transform: inherit;
+  text-align: left;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+  border-radius: 6px;
+}
+.navgroup-toggle:hover { color: var(--ink, #e2e8f0); }
+.navgroup-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.navgroup-toggle .chev {
+  display: inline-block;
+  transition: transform 0.16s ease;
+  font-size: 0.7rem;
+}
+.navgroup-toggle[aria-expanded="true"] .chev { transform: rotate(90deg); }
+@media (prefers-reduced-motion: reduce) { .navgroup-toggle .chev { transition: none; } }
+.navitem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 150ms ease-out;
+}
+.navitem:hover { background: var(--hover); text-decoration: none; }
+.navitem[aria-current="page"] {
+  background: var(--brand-tint);
+  color: var(--brand-strong);
+  font-weight: 650;
+}
+.navitem .ico { width: 1.15em; text-align: center; flex: none; }
+
+.content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+.topbar h1 { margin: 0; font-size: 1.15rem; }
+.topbar .who { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+.pagebody { padding: 20px 24px 72px; max-width: 980px; width: 100%; }
+
+.menubtn {
+  display: none;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  min-height: 40px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+.backdrop { display: none; }
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: var(--z-drawer);
+    transform: translateX(-100%);
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .app[data-nav="open"] .sidebar { transform: translateX(0); box-shadow: var(--shadow-overlay); }
+  .app[data-nav="open"] .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-backdrop);
+    background: var(--scrim);
+    border: 0;
+    padding: 0;
+  }
+  .menubtn { display: inline-flex; align-items: center; }
+  .pagebody { padding: 16px 14px 72px; }
+  .topbar { padding: 10px 14px; }
+}
+/* ------------------------------------------------- mobile-first layer */
+/* Phones are a first-class device, not an afterthought. 16px controls stop
+   iOS focus-zoom; targets grow to 44px; tables scroll sideways inside
+   their card instead of breaking the page. */
+
+/* bottom tab bar (phones only) */
+.tabbar { display: none; }
+@media (max-width: 900px) {
+  .tabbar {
+    display: flex;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: var(--z-sticky);
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
+  }
+  .tabbar a, .tabbar button.tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 2px;
+    min-height: 52px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+  }
+  .tabbar .tico { font-size: 1.25rem; line-height: 1; }
+  .tabbar a[aria-current="page"] { color: var(--brand-strong); background: var(--brand-tint); }
+  .pagebody { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+  .topbar { padding-top: calc(10px + env(safe-area-inset-top)); }
+  .topbar .who span:not(.pill) { display: none; } /* email hides on phones */
+}
+
+/* ------------------------------------------------------------- skeletons
+   A wireframe of the screen that is coming, not a spinner. Every bar is sized
+   by the component from the real rule it stands in for, so nothing moves when
+   the data lands — a placeholder that reflows on swap is worse than plain
+   text, because it promises a shape and then breaks the promise.
+
+   Lives here and only here: the CSP is `style-src 'self' 'nonce-…'` with no
+   'unsafe-inline', so an injected <style> tag or a CSS-in-JS library would be
+   blocked IN PRODUCTION ONLY — the same failure class this app already ate
+   once with force-dynamic. globals.css is a 'self' stylesheet and is safe. */
+.skel {
+  display: block;
+  background: var(--skel);
+  position: relative;
+  overflow: hidden;
+  flex: none;
+}
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--skel-sheen), transparent);
+  animation: skel-sweep 1.3s ease-in-out infinite;
+}
+@keyframes skel-sweep {
+  to { transform: translateX(100%); }
+}
+.skel-stack { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.skel-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.skel-row:last-child { border-bottom: 0; }
+
+/* Stale-but-still-useful: a FILTER refetch (a date range, a list filter)
+   keeps the old data on screen and dims it. Re-skeletoning a populated
+   screen because someone clicked "next week" is a downgrade — they could
+   read it a moment ago and now they cannot. */
+.is-stale { opacity: 0.55; pointer-events: none; transition: opacity 120ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* This was a hand-maintained selector list covering `transition` only, which
+     is a standing bug: every new animated thing has to remember to be added,
+     and the one that forgets is the one that hurts someone. The skeleton sweep
+     would have sailed straight past it. Cover everything instead. */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* The sheen is decoration, not information — the flat tone still reads as
+     "not content yet", which is the whole message. */
+  .skel::after { display: none; }
+}
+
+/* legacy standalone pages (login, portal) */
+main.shell { max-width: 720px; margin: 0 auto; padding: 20px 16px 64px; }
+
+/* ------------------------------------------------------------- surfaces */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+.muted { color: var(--muted); font-size: 0.875rem; }
+.big { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.banner {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.error { color: var(--danger); font-size: 0.875rem; }
+.pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+}
+.list-item { display: block; padding: 12px 14px; border-bottom: 1px solid var(--line-soft); color: inherit; }
+.list-item:last-child { border-bottom: 0; }
+.list-item:hover { background: var(--bg); text-decoration: none; }
+
+/* pre-shell pages that still render their own nav (none after the shell
+   migration, kept so nothing breaks if one slips through) */
+nav.top {
+  display: flex;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------- forms */
+label { display: block; font-size: 0.8rem; font-weight: 550; color: var(--muted); margin: 8px 0 3px; }
+input, select, textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  transition: border-color 150ms ease-out;
+}
+input::placeholder, textarea::placeholder { color: var(--placeholder); }
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+button:focus-visible, a:focus-visible, .chip:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+button {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--brand);
+  color: var(--brand-ink);
+  cursor: pointer;
+  min-height: 42px;
+  transition: background 150ms ease-out;
+}
+button:hover:not(:disabled) { background: var(--brand-strong); }
+button.secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+button.secondary:hover:not(:disabled) { background: var(--panel); }
+button:disabled { opacity: 0.45; cursor: default; }
+
+/* A button that reads as a link — for stage switches on the login screen
+   ("Create an account", "Forgot password?"). A real <a> would imply
+   navigation; these change client state, so they must be buttons (WCAG 4.1.2:
+   the role should match the behavior). */
+button.linklike {
+  background: none;
+  border: none;
+  padding: 0;
+  min-height: 0;
+  font-size: inherit;
+  font-weight: 550;
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+button.linklike:hover:not(:disabled) { background: none; color: var(--brand-strong); }
+
+/* --------------------------------------------------------------- tables */
+table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+th {
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid var(--line);
+}
+td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}
+tbody tr:hover { background: var(--bg); }
+tbody tr:last-child td { border-bottom: 0; }
+
+/* money-positive figures (the brand sheets' teal stats) */
+.gain { color: var(--go); font-weight: 650; }
+
+/* toggle chips (team page department walls) */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 34px;
+  transition: all 150ms ease-out;
+}
+.chip[aria-pressed="true"] {
+  background: var(--brand-tint);
+  border-color: var(--brand);
+  color: var(--brand-strong);
+}
+.chip:disabled { opacity: 0.45; cursor: default; }
+
+/* ------------------------------------------------- mobile control layer */
+/* LAST in the cascade on purpose: these override the base control rules
+   on phones/touch. 16px inputs stop iOS focus-zoom; 44px targets. */
+@media (max-width: 700px), (pointer: coarse) {
+  input, select, textarea { font-size: 16px; padding: 11px 12px; }
+  button { min-height: 44px; }
+  .chip { min-height: 40px; }
+}
+@media (max-width: 700px) {
+  .card { padding: 13px; }
+  .card > table, .card table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  .big { font-size: 1.35rem; }
+  .row > button { flex: 1 0 auto; }
+}
+
+/* ------------------------------------------------ accessibility + step-up */
+
+/* Visually hidden, still announced. The app had no live region at all before
+   this — a rejected code or blocked action changed the screen silently for a
+   screen-reader user (WCAG 2.2 AA 4.1.3). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The one banner for "this needs 2-step verification", shown app-wide so no
+   page has to special-case a condition that is really about the account. */
+.stepup {
+  /* ⛔ This used to say `grid-column: 1 / -1`, which is a GRID property.
+     `.app` is display:flex, so it did nothing — and the bar became a flex
+     ITEM in the sidebar+content row, collapsing the page content to zero
+     width on every desktop viewport. The bars now render OUTSIDE `.app`
+     (see AppShell) and are ordinary full-width blocks, which is what the
+     original rule was reaching for. */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--warn-bg);
+  border-bottom: 1px solid var(--warn-line);
+  color: var(--ink);
+  font-size: 14px;
+}
+.stepup a {
+  color: #7a4b00;
+  font-weight: 600;
+}
+.stepup button {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: #5c4600;
+  cursor: pointer;
+  font-size: 16px;
+  min-height: 32px;
+  min-width: 32px;
+}
+@media (prefers-color-scheme: dark) {
+  .stepup {
+    background: #3a2f00;
+    border-bottom-color: #6b5600;
+    color: #ffe9a3;
+  }
+  .stepup a { color: #ffd970; }
+  .stepup button { color: #ffe9a3; }
+}
+
+/* The paywall banner: the read-only state, announced app-wide (same
+   outside-.app placement as .stepup, same reasoning). Read-only gets the
+   firm danger tint; the past-due GRACE warning reuses .stepup's amber, since
+   access is still full. Tokens, not media queries, so the explicit theme
+   toggle governs it too. */
+.paywall {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--danger-tint);
+  border-bottom: 1px solid var(--danger);
+  color: var(--ink);
+  font-size: 14px;
+}
+.paywall a { color: var(--danger); font-weight: 600; }
+
+

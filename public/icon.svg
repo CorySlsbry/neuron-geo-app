@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Neuron GEO placeholder mark (final brand is Cory's call): the shell's
+       three rising bars, monogram NG, brand indigo. -->
+  <rect width="128" height="128" rx="24" fill="#5450d4"/>
+  <g fill="#ffffff">
+    <rect x="30" y="52" width="12" height="24" rx="4"/>
+    <rect x="50" y="40" width="12" height="36" rx="4"/>
+    <rect x="70" y="30" width="12" height="46" rx="4"/>
+  </g>
+  <text x="64" y="104" text-anchor="middle" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#ffffff">NG</text>
+</svg>

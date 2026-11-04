@@ -1,0 +1,78 @@
+# Build → Artifact Registry → deploy the publishing WORKER as a Cloud Run JOB.
+#
+# ⛔ A SEPARATE PIPELINE FROM cloudbuild.yaml, AND SEPARATE ON PURPOSE.
+#
+# The web service and the worker connect to the same database as DIFFERENT
+# ROLES: `app_user` sees one tenant and holds no EXECUTE on any job function;
+# `app_worker` sees the whole queue. Migration 0005 makes that split the core
+# of the tenant-isolation design, and it only holds if the two DSNs live on two
+# separate deployments. One deployment carrying both would mean a single
+# misconfigured env var collapses the distinction.
+#
+# ⛔ A JOB, NOT A SERVICE. The worker serves nothing and must not be reachable:
+# no ingress, no URL, no unauthenticated surface. Cloud Run Jobs are the right
+# shape (run to completion, scheduled by Cloud Scheduler), and `--drain` exits
+# once the queue is empty, so a job invocation is exactly one pass.
+#
+# ⛔ NOT WIRED UP YET. No GCP resources exist for this app (docs/NEEDS-CORY.md
+# item 4). Running this today fails at the first gcloud call, which is the
+# honest state: the pipeline shape is reviewed and ready, the infrastructure is
+# Cory's decision.
+substitutions:
+  _REGION: us-central1
+  _REPO: neuron-geo
+  _JOB: neuron-geo-worker
+steps:
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    # BuildKit is REQUIRED — the Dockerfile uses `RUN --mount=type=cache` for
+    # the pnpm store, and the legacy engine fails with "the --mount option
+    # requires BuildKit".
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --target
+      - worker
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_JOB}:$SHORT_SHA
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_JOB}:$SHORT_SHA
+
+  - id: deploy-job-by-digest
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        # $$ escapes the substitution parser so bash reads the variable, not
+        # Cloud Build. The parser scans COMMENTS too, so the unescaped name
+        # must not appear anywhere in this block.
+        DIGEST=$$(gcloud artifacts docker images describe \
+          ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_JOB}:$SHORT_SHA \
+          --format='value(image_summary.digest)')
+
+        # Deployed by immutable digest, never :latest — a registry-pointer race
+        # can silently ship the prior build.
+        #
+        # PUBLISH_LIVE_ENABLED is deliberately NOT set here. It is the switch
+        # that lets a job contact a real platform, and it belongs in a
+        # deliberate `gcloud run jobs update` by a person, not in a pipeline
+        # that runs on every push. Absent = rehearsal only, which is the
+        # fail-closed direction.
+        gcloud run jobs deploy ${_JOB} \
+          --image ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_JOB}@$$DIGEST \
+          --region ${_REGION} \
+          --args=--drain \
+          --max-retries 1 \
+          --task-timeout 900s \
+          --set-secrets WORKER_DATABASE_URL=neuron-geo-worker-dsn:latest \
+          --set-secrets CHANNEL_TOKEN_KEY=neuron-geo-channel-token-key:latest
+options:
+  logging: CLOUD_LOGGING_ONLY

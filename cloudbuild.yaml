@@ -1,0 +1,59 @@
+# Build → Artifact Registry → deploy to Cloud Run by IMMUTABLE DIGEST (never
+# :latest — a registry-pointer race can silently ship the prior build).
+# ⛔ Inherited pipeline SHAPE from the parent repo — no GCP resources are
+# provisioned for THIS app yet (P1 decision: Cloud Run vs elsewhere). The
+# substitution names below are placeholders, not live infrastructure.
+substitutions:
+  _REGION: us-central1
+  _REPO: neuron-geo
+  _SERVICE: neuron-geo-web
+steps:
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    # BuildKit is REQUIRED: the Dockerfile uses `RUN --mount=type=cache` for the
+    # pnpm store. Without this env the build fails with "the --mount option
+    # requires BuildKit" — the default docker builder runs the legacy engine.
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA
+      - .
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA
+  - id: migrate
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        echo "Run the gated migration Cloud Run Job here BEFORE traffic shift."
+        echo "(wired in S1 once Cloud SQL + the migration role exist)"
+  - id: deploy-by-digest
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        # $$ escapes the substitution parser so bash — not Cloud Build — reads
+        # the variable below. Unescaped, it is treated as a Cloud Build
+        # substitution key and the build is rejected before it starts with
+        # "is not a valid built-in substitution".
+        #
+        # NB: the parser scans this whole block, COMMENTS INCLUDED — writing
+        # the unescaped name here in prose reintroduces the same error, which
+        # is exactly how the first attempt at this fix failed.
+        DIGEST=$$(gcloud artifacts docker images describe \
+          ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$SHORT_SHA \
+          --format='value(image_summary.digest)')
+        gcloud run deploy ${_SERVICE} \
+          --image ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}@$$DIGEST \
+          --region ${_REGION} --platform managed \
+          --no-allow-unauthenticated
+options:
+  logging: CLOUD_LOGGING_ONLY

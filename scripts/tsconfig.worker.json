@@ -1,0 +1,18 @@
+{
+  // The publishing worker's tsconfig. Identical to the root one except for a
+  // single alias: `server-only` resolves to a no-op stub.
+  //
+  // The real package throws the moment it is imported outside Next's server
+  // bundle, which would stop a server-side daemon from starting for the sake
+  // of a guard about client components. Scoping the alias to this file means
+  // `pnpm build`, `pnpm typecheck` and every web-tier import still resolve the
+  // genuine package and keep the tripwire — see scripts/stubs/server-only.ts.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["../src/*"],
+      "server-only": ["./stubs/server-only.ts"]
+    }
+  },
+  "include": ["worker.ts", "stubs/**/*.ts", "../src/**/*.ts"]
+}

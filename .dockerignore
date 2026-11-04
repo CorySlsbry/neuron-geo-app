@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.gitignore
+Dockerfile
+.dockerignore
+docker-compose.yml
+coverage
+.vitest
+.env
+.env.*
+!.env.example
+.pgdata
+README.md
+docs
+*.md

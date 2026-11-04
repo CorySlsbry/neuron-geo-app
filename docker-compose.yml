@@ -1,0 +1,24 @@
+# Local dev Postgres. Creates the NON-superuser app role + enables the pgTAP
+# testing extension, so local tests exercise the real RLS policies (the app
+# role has no BYPASSRLS). Production uses Cloud SQL for PostgreSQL 16.
+services:
+  db:
+    build: ./db
+    image: neurongeo-db:16-pgtap
+    container_name: neurongeo-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: neurongeo
+    ports:
+      # 5433 on the host: the parent repo's topbuilder-db dev container owns
+      # 5432 on this machine, and the fork must not fight it for the port.
+      - "5433:5432"
+    volumes:
+      - ./.pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d neurongeo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

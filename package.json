@@ -1,0 +1,64 @@
+{
+  "name": "neuron-geo-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "verify": "pnpm typecheck && pnpm lint && next build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:db": "tsx scripts/pgtap.mjs",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f db",
+    "migrate": "tsx scripts/migrate.ts up",
+    "migrate:status": "tsx scripts/migrate.ts status",
+    "worker": "tsx --tsconfig scripts/tsconfig.worker.json scripts/worker.ts",
+    "ops:status": "tsx --tsconfig scripts/tsconfig.worker.json scripts/ops-status.ts"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "^9.12.0",
+    "iron-session": "^8.0.4",
+    "jose": "^6.2.4",
+    "next": "16.2.11",
+    "pg": "^8.13.1",
+    "qrcode-generator": "^2.0.4",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "server-only": "^0.0.1",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "drizzle-kit": "^0.31.0",
+    "drizzle-orm": "^0.45.2",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "16.2.10",
+    "eslint-import-resolver-typescript": "^4.0.0",
+    "eslint-plugin-boundaries": "^7.0.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.10"
+  },
+  "pnpm": {
+    "overrides": {
+      "sharp": ">=0.35.0",
+      "postcss": ">=8.5.23",
+      "nanoid": ">=3.3.17"
+    }
+  },
+  "packageManager": "pnpm@10.33.0"
+}
